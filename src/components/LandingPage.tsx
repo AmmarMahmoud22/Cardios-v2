@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Heart, 
   Activity, 
@@ -17,6 +18,7 @@ import {
   TrendingUp,
   MessageCircle
 } from 'lucide-react';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface LandingPageProps {
   onLaunchDashboard: () => void;
@@ -24,6 +26,8 @@ interface LandingPageProps {
 }
 
 export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchDashboard, onOpenPatientPortal }) => {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith('ar');
   const WHATSAPP_URL = "https://wa.me/201146963589?text=Hello%20Cardios%20Team,%20I%20would%20like%20to%20book%20a%20live%20demo.";
 
   const comparisonData = [
@@ -82,48 +86,52 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchDashboard, onO
       {/* Top Announcement Bar */}
       <div className="bg-gradient-to-r from-cardio-900 via-rose-950 to-slate-900 border-b border-rose-900/40 px-4 py-2.5 text-xs sm:text-sm text-center font-medium text-rose-200 flex items-center justify-center gap-2">
         <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-ping" />
-        <span className="font-semibold text-white">Next-Gen Release:</span> Cardios v2.4 with Automated Echo EF Engine & Real-Time RPM Sync is live.
-        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="underline hover:text-white ml-2 inline-flex items-center gap-1 font-bold">
-          Book Demo via WhatsApp <ArrowRight className="w-3 h-3" />
+        <span className="font-semibold text-white">{isRtl ? 'الإصدار المطور:' : 'Next-Gen Release:'}</span>
+        <span>{isRtl ? 'كارديوس v2.4 مع محرك الإيكو التلقائي والمزامنة الخلوية اللحظية.' : 'Cardios v2.4 with Automated Echo EF Engine & Real-Time RPM Sync is live.'}</span>
+        <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="underline hover:text-white ltr:ml-2 rtl:mr-2 inline-flex items-center gap-1 font-bold">
+          {isRtl ? 'طلب عرض تجريبي عبر واتساب' : 'Book Demo via WhatsApp'} <ArrowRight className="w-3 h-3 rtl:rotate-180" />
         </a>
       </div>
 
       {/* Navigation Header */}
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-cardio-600 to-rose-500 flex items-center justify-center shadow-lg shadow-rose-900/40 ring-2 ring-rose-400/20">
+          <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-cardio-600 to-rose-500 flex items-center justify-center shadow-lg shadow-rose-900/40 ring-2 ring-rose-400/20 shrink-0">
             <Heart className="w-6 h-6 text-white animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-2xl font-bold tracking-tight text-white font-heading">Cardios</span>
-              <span className="text-xs px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono font-semibold">EHR & RPM</span>
+              <span className="text-2xl font-bold tracking-tight text-white font-heading">{t('nav.brand')}</span>
+              <span className="text-xs px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30 font-mono font-semibold uppercase">EHR & RPM</span>
             </div>
-            <p className="text-[11px] text-slate-400">Cardiovascular Practice Intelligence</p>
+            <p className="text-[11px] text-slate-400">{t('nav.subtitle')}</p>
           </div>
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-slate-300">
-          <a href="#features" className="hover:text-white transition">Features</a>
-          <a href="#comparison" className="hover:text-white transition">Altibbi Comparison</a>
-          <a href="#telemetry" className="hover:text-white transition">RPM Telemetry</a>
-          <a href="#specialties" className="hover:text-white transition">Clinical Modules</a>
+          <a href="#features" className="hover:text-white transition">{isRtl ? 'المميزات' : 'Features'}</a>
+          <a href="#comparison" className="hover:text-white transition">{isRtl ? 'مقارنة المنصات' : 'Comparison'}</a>
+          <a href="#telemetry" className="hover:text-white transition">{isRtl ? 'المراقبة عن بُعد' : 'RPM Telemetry'}</a>
+          <a href="#specialties" className="hover:text-white transition">{isRtl ? 'الوحدات السريرية' : 'Clinical Modules'}</a>
         </div>
 
         <div className="flex items-center gap-3">
+          {/* Language Switcher */}
+          <LanguageSwitcher variant="landing" />
+
           <button 
             onClick={onOpenPatientPortal}
             className="hidden sm:inline-flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-medium text-slate-200 bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700 transition"
           >
             <Smartphone className="w-4 h-4 text-emerald-400" />
-            Patient Portal
+            {t('nav.portal')}
           </button>
           <button 
             onClick={onLaunchDashboard}
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-cardio-600 to-rose-600 hover:from-cardio-500 hover:to-rose-500 shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5"
           >
             <Stethoscope className="w-4 h-4" />
-            Launch Dashboard
+            {t('landing.launchStation')}
           </button>
         </div>
       </nav>
@@ -137,15 +145,18 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchDashboard, onO
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-800/90 border border-slate-700/80 text-xs sm:text-sm font-medium text-slate-300 mb-8 shadow-inner">
             <span className="flex h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
-            Designed specifically for Cardiologists, Cath Labs & Heart Clinics
+            {t('landing.heroBadge')}
           </div>
 
           <h1 className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white max-w-5xl mx-auto font-heading leading-tight">
-            Cardiology-First <span className="bg-gradient-to-r from-rose-400 via-cardio-400 to-orange-300 bg-clip-text text-transparent">EHR & RPM</span> Platform
+            {t('landing.heroTitle1')}{' '}
+            <span className="bg-gradient-to-r from-rose-400 via-cardio-400 to-orange-300 bg-clip-text text-transparent">
+              {t('landing.heroTitle2')}
+            </span>
           </h1>
 
           <p className="mt-6 text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto font-normal leading-relaxed">
-            Eliminate generic telemedicine friction with an integrated cardiovascular operating system. Real-time patient telemetry, guideline-directed smart prescriptions, automated Echocardiography & ECG reporting, and instant patient follow-ups.
+            {t('landing.heroDesc')}
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
@@ -154,8 +165,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchDashboard, onO
               className="px-8 py-4 rounded-xl text-base font-bold text-white bg-gradient-to-r from-cardio-600 via-rose-600 to-red-600 hover:from-cardio-500 hover:to-rose-500 shadow-xl shadow-rose-600/30 flex items-center gap-3 transition transform hover:-translate-y-0.5 active:translate-y-0"
             >
               <Activity className="w-5 h-5 animate-pulse text-white" />
-              Launch Dashboard
-              <ChevronRight className="w-5 h-5 text-rose-200" />
+              {t('landing.launchStation')}
+              <ChevronRight className="w-5 h-5 text-rose-200 rtl:rotate-180" />
             </button>
 
             <a
@@ -165,7 +176,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLaunchDashboard, onO
               className="px-8 py-4 rounded-xl text-base font-bold text-emerald-300 bg-emerald-950/70 hover:bg-emerald-900/80 border border-emerald-500/40 hover:border-emerald-400 flex items-center gap-3 shadow-lg shadow-emerald-950/40 transition transform hover:-translate-y-0.5"
             >
               <MessageCircle className="w-5 h-5 text-emerald-400" />
-              Book Demo via WhatsApp
+              {isRtl ? 'حجز عرض تجريبي عبر واتساب' : 'Book Demo via WhatsApp'}
             </a>
           </div>
 

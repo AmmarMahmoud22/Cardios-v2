@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Patient, RPMAlert, Appointment, LabTest } from '../types';
 import { acknowledgeRPMAlert, savePatient } from '../firebase/firestoreService';
 import { 
@@ -40,6 +41,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onNavigateToPortal,
   onPatientAdded
 }) => {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith('ar');
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
@@ -115,14 +118,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-bold text-slate-500 uppercase tracking-wider font-mono">
-              Live Clinical Telemetry Hub
+              {t('dashboard.liveHub')}
             </span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight font-heading mt-1">
-            Cardiologist Practice Station
+            {t('dashboard.stationTitle')}
           </h1>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
-            Real-time RPM telemetry alerts, guideline-directed pharmacotherapy, and diagnostic echocardiography
+            {t('dashboard.stationSubtitle')}
           </p>
         </div>
 
@@ -132,14 +135,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-lg shadow-rose-600/30 transition transform hover:-translate-y-0.5"
           >
             <UserPlus className="w-4 h-4" />
-            Register Patient
+            {t('dashboard.registerPatient')}
           </button>
           <button
             onClick={onNavigateToPortal}
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 shadow-sm transition"
           >
             <Activity className="w-4 h-4 text-emerald-600" />
-            Launch Mobile RPM
+            {t('dashboard.launchMobileRpm')}
           </button>
         </div>
       </div>
@@ -149,7 +152,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {/* Metric 1: Active Patients */}
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-slate-300 transition">
           <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span className="font-semibold">Active Registered Patients</span>
+            <span className="font-semibold">{t('dashboard.statTotalPatients')}</span>
             <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
               <Users className="w-5 h-5" />
             </div>
@@ -158,7 +161,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {patients.length}
           </div>
           <div className="mt-2 text-[11px] text-slate-500 flex items-center gap-1">
-            <span className="text-emerald-600 font-bold">100% Continuous RPM</span> enabled
+            <span className="text-emerald-600 font-bold">{t('dashboard.statTotalPatientsSub')}</span>
           </div>
         </div>
 
@@ -169,7 +172,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             : 'bg-white border-slate-200'
         }`}>
           <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span className="font-semibold">Real-Time RPM Alerts</span>
+            <span className="font-semibold">{t('dashboard.statActiveAlerts')}</span>
             <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold ${
               unacknowledgedAlerts.length > 0 ? 'bg-rose-600 text-white animate-pulse' : 'bg-slate-100 text-slate-600'
             }`}>
@@ -181,9 +184,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
           <div className="mt-2 text-[11px] text-rose-700 font-bold flex items-center gap-1">
             {unacknowledgedAlerts.length > 0 ? (
-              <span>Requires immediate clinical review</span>
+              <span>{t('dashboard.statActiveAlertsSub')}</span>
             ) : (
-              <span className="text-emerald-600">All telemetry within limits</span>
+              <span className="text-emerald-600">{t('dashboard.stable')}</span>
             )}
           </div>
         </div>
@@ -191,7 +194,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         {/* Metric 3: Pending Lab Results */}
         <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-slate-300 transition">
           <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span className="font-semibold">Pending STAT Lab Results</span>
+            <span className="font-semibold">{t('dashboard.statPendingLabs')}</span>
             <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
               <Clock className="w-5 h-5" />
             </div>
@@ -200,7 +203,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {pendingLabs.length}
           </div>
           <div className="mt-2 text-[11px] text-slate-500">
-            Troponin & NT-proBNP in central lab
+            {t('dashboard.statPendingLabsSub')}
           </div>
         </div>
 
@@ -210,7 +213,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm hover:border-slate-300 transition cursor-pointer group"
         >
           <div className="flex items-center justify-between text-slate-500 text-xs">
-            <span className="font-semibold">Today's Appointments</span>
+            <span className="font-semibold">{t('dashboard.statTodayAppointments')}</span>
             <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 group-hover:scale-105 transition flex items-center justify-center font-bold">
               <CalendarIcon className="w-5 h-5" />
             </div>
@@ -219,8 +222,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
             {todayAppointments.length}
           </div>
           <div className="mt-2 text-[11px] text-indigo-600 font-bold flex items-center gap-1">
-            <span>View Schedule</span>
-            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition" />
+            <span>{t('dashboard.statTodayAppointmentsSub')}</span>
+            <ArrowRight className="w-3 h-3 group-hover:translate-x-1 rtl:group-hover:-translate-x-1 rtl:rotate-180 transition" />
           </div>
         </div>
       </div>
@@ -230,20 +233,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="bg-rose-50 border-2 border-rose-300 rounded-2xl p-6 shadow-md shadow-rose-950/5 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center animate-pulse">
+              <div className="w-8 h-8 rounded-lg bg-rose-600 text-white flex items-center justify-center animate-pulse shrink-0">
                 <AlertTriangle className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-base font-extrabold text-rose-950 font-heading">
-                  Active Real-Time RPM Telemetry Alerts ({unacknowledgedAlerts.length})
+                  {t('dashboard.activeAlertsHeader')} ({unacknowledgedAlerts.length})
                 </h2>
                 <p className="text-xs text-rose-800">
-                  Critical high BP or heart rate readings synchronized from home cellular monitors
+                  {t('dashboard.criticalAlertNotice')}
                 </p>
               </div>
             </div>
             <span className="text-xs px-2.5 py-1 rounded-full bg-rose-600 text-white font-bold animate-ping">
-              STAT ACTION
+              {t('dashboard.alert')}
             </span>
           </div>
 
@@ -280,14 +283,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     onClick={() => onSelectPatient(alert.patientId)}
                     className="px-3 py-1.5 rounded-lg border border-slate-300 text-slate-700 font-bold hover:bg-slate-50 transition"
                   >
-                    View Chart
+                    {t('dashboard.viewChart')}
                   </button>
                   <button
                     onClick={() => handleAcknowledgeAlert(alert.id)}
                     className="px-3.5 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold transition flex items-center gap-1.5"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5" />
-                    Acknowledge
+                    {t('dashboard.acknowledge')}
                   </button>
                 </div>
               </div>
@@ -302,23 +305,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <div className="p-5 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <h2 className="text-lg font-extrabold text-slate-900 font-heading">
-              Registered Patients Directory
+              {t('dashboard.patientsRegistry')}
             </h2>
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold">
-              {filteredPatients.length} Active Records
+              {filteredPatients.length} {t('common.all')}
             </span>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
             {/* Search Box */}
             <div className="relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-slate-400 absolute ltr:left-3 rtl:right-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
-                placeholder="Search patient, MRN, diagnosis..."
-                className="pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-rose-500 w-60"
+                placeholder={t('dashboard.searchPlaceholder')}
+                className="ltr:pl-9 ltr:pr-4 rtl:pr-9 rtl:pl-4 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-rose-500 w-64 text-left rtl:text-right"
               />
             </div>
 
@@ -330,7 +333,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   statusFilter === 'all' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'
                 }`}
               >
-                All
+                {t('dashboard.allStatus')}
               </button>
               <button
                 onClick={() => setStatusFilter('Alert: High BP')}
@@ -338,7 +341,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   statusFilter === 'Alert: High BP' ? 'bg-rose-600 text-white shadow-sm' : 'text-slate-600'
                 }`}
               >
-                Alerts
+                {t('dashboard.alert')}
               </button>
               <button
                 onClick={() => setStatusFilter('Pending Lab')}
@@ -346,7 +349,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   statusFilter === 'Pending Lab' ? 'bg-amber-500 text-white shadow-sm' : 'text-slate-600'
                 }`}
               >
-                Pending Labs
+                {t('dashboard.needsLab')}
               </button>
               <button
                 onClick={() => setStatusFilter('Stable')}
@@ -354,7 +357,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   statusFilter === 'Stable' ? 'bg-emerald-600 text-white shadow-sm' : 'text-slate-600'
                 }`}
               >
-                Stable
+                {t('dashboard.stable')}
               </button>
             </div>
           </div>
@@ -362,21 +365,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
         {/* Patient Table */}
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <table className="w-full text-left rtl:text-right text-xs">
             <thead>
               <tr className="bg-slate-50 border-b border-slate-200 text-slate-500 font-bold uppercase tracking-wider">
-                <th className="py-4 px-6">Patient Name & MRN</th>
-                <th className="py-4 px-6">DOB & Age</th>
-                <th className="py-4 px-6">Primary Cardiology Diagnosis</th>
-                <th className="py-4 px-6">Status Badge</th>
-                <th className="py-4 px-6 text-right">Actions</th>
+                <th className="py-4 px-6">{t('dashboard.colNameMrn')}</th>
+                <th className="py-4 px-6">{t('dashboard.colDemographics')}</th>
+                <th className="py-4 px-6">{t('dashboard.colDiagnosis')}</th>
+                <th className="py-4 px-6">{t('dashboard.colStatus')}</th>
+                <th className="py-4 px-6 ltr:text-right rtl:text-left">{t('dashboard.colActions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {filteredPatients.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-12 text-center text-slate-400">
-                    No matching patients found.
+                    {t('dashboard.noPatients')}
                   </td>
                 </tr>
               ) : (
@@ -393,7 +396,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         <div>
                           <button
                             onClick={() => onSelectPatient(patient.id)}
-                            className="font-bold text-sm text-slate-900 hover:text-rose-600 transition text-left"
+                            className="font-bold text-sm text-slate-900 hover:text-rose-600 transition text-left rtl:text-right"
                           >
                             {patient.name}
                           </button>
@@ -404,13 +407,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
                     <td className="py-4 px-6 text-slate-600">
                       <div className="font-medium text-slate-800">{patient.dob}</div>
-                      <div className="text-[11px] text-slate-400">{patient.age}y • {patient.gender}</div>
+                      <div className="text-[11px] text-slate-400">{patient.age} {t('patientProfile.yearsOld')} • {patient.gender === 'Male' ? t('registerModal.male') : t('registerModal.female')}</div>
                     </td>
 
                     <td className="py-4 px-6 max-w-xs">
                       <div className="font-medium text-slate-800 line-clamp-1">{patient.primaryDiagnosis}</div>
                       <div className="text-[11px] text-slate-400">
-                        Blood: <strong className="text-rose-600 font-semibold">{patient.bloodType}</strong> • Next visit: {patient.nextAppointment || 'TBD'}
+                        {t('patientProfile.bloodType')}: <strong className="text-rose-600 font-semibold">{patient.bloodType}</strong> • {t('patientProfile.nextAppointment')}: {patient.nextAppointment || '—'}
                       </div>
                     </td>
 
@@ -427,17 +430,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
                         ) : (
                           <ShieldCheck className="w-3.5 h-3.5" />
                         )}
-                        {patient.status}
+                        {patient.status === 'Alert: High BP' ? t('dashboard.alert') : patient.status === 'Pending Lab' ? t('dashboard.needsLab') : t('dashboard.stable')}
                       </span>
                     </td>
 
-                    <td className="py-4 px-6 text-right">
+                    <td className="py-4 px-6 ltr:text-right rtl:text-left">
                       <button
                         onClick={() => onSelectPatient(patient.id)}
                         className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-lg text-xs font-bold text-white bg-slate-900 hover:bg-rose-600 transition shadow-sm"
                       >
-                        <span>View Profile</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <span>{t('dashboard.openChart')}</span>
+                        <ArrowRight className="w-3.5 h-3.5 rtl:rotate-180" />
                       </button>
                     </td>
                   </tr>
@@ -455,29 +458,29 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
               <h2 className="text-sm font-bold flex items-center gap-2">
                 <UserPlus className="w-4 h-4 text-rose-500" />
-                Register New Cardiology Patient
+                {t('registerModal.modalTitle')}
               </h2>
               <button onClick={() => setIsRegisterModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleRegisterPatient} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleRegisterPatient} className="p-6 space-y-4 text-xs text-left rtl:text-right">
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className="block font-bold text-slate-700 mb-1">Full Patient Name:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.fullName')}:</label>
                   <input
                     type="text"
                     value={name}
                     onChange={e => setName(e.target.value)}
-                    placeholder="e.g. Mahmoud Youssef"
+                    placeholder={isRtl ? 'مثال: محمود يوسف' : 'e.g. Mahmoud Youssef'}
                     className="w-full px-3 py-2 rounded-lg border border-slate-300 font-medium"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Date of Birth:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.dob')}:</label>
                   <input
                     type="date"
                     value={dob}
@@ -488,19 +491,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Gender:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.gender')}:</label>
                   <select
                     value={gender}
                     onChange={e => setGender(e.target.value as 'Male' | 'Female')}
                     className="w-full px-3 py-2 rounded-lg border border-slate-300"
                   >
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
+                    <option value="Male">{t('registerModal.male')}</option>
+                    <option value="Female">{t('registerModal.female')}</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Phone Number:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.phone')}:</label>
                   <input
                     type="text"
                     value={phone}
@@ -510,7 +513,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Blood Type:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.bloodType')}:</label>
                   <select
                     value={bloodType}
                     onChange={e => setBloodType(e.target.value)}
@@ -526,7 +529,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div className="col-span-2">
-                  <label className="block font-bold text-slate-700 mb-1">Primary Cardiology Diagnosis:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.primaryDiagnosis')}:</label>
                   <input
                     type="text"
                     value={primaryDiagnosis}
@@ -537,21 +540,23 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Risk Factors (comma-separated):</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.riskFactors')}:</label>
                   <input
                     type="text"
                     value={riskFactors}
                     onChange={e => setRiskFactors(e.target.value)}
+                    placeholder={t('registerModal.riskFactorsHelp')}
                     className="w-full px-3 py-2 rounded-lg border border-slate-300"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Known Allergies:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('registerModal.allergies')}:</label>
                   <input
                     type="text"
                     value={allergies}
                     onChange={e => setAllergies(e.target.value)}
+                    placeholder={t('registerModal.allergiesHelp')}
                     className="w-full px-3 py-2 rounded-lg border border-slate-300"
                   />
                 </div>
@@ -563,13 +568,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
                   onClick={() => setIsRegisterModalOpen(false)}
                   className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 font-bold"
                 >
-                  Cancel
+                  {t('registerModal.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold shadow-md"
                 >
-                  Register & Create MRN
+                  {t('registerModal.submit')}
                 </button>
               </div>
             </form>

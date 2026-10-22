@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Appointment, Patient } from '../types';
 import { saveAppointment } from '../firebase/firestoreService';
 import { 
@@ -27,6 +28,8 @@ export const Calendar: React.FC<CalendarProps> = ({
   onAppointmentSaved,
   onSelectPatient
 }) => {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith('ar');
   const [selectedDate, setSelectedDate] = useState('2026-10-22');
   const [filterType, setFilterType] = useState<string>('all');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -78,16 +81,16 @@ export const Calendar: React.FC<CalendarProps> = ({
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-wrap items-center justify-between gap-4 text-left rtl:text-right">
         <div>
           <h1 className="text-2xl font-extrabold text-slate-900 flex items-center gap-2.5 font-heading">
-            <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
               <CalendarIcon className="w-5 h-5" />
             </div>
-            Cardiology Practice Scheduling & Consultations
+            {t('calendar.title')}
           </h1>
           <p className="text-xs text-slate-500 mt-1">
-            Manage outpatient visits, echocardiograms, post-PCI follow-ups, and telemedicine RPM sessions
+            {t('calendar.subtitle')}
           </p>
         </div>
 
@@ -96,15 +99,15 @@ export const Calendar: React.FC<CalendarProps> = ({
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-md shadow-rose-600/30 transition"
         >
           <Plus className="w-4 h-4" />
-          Schedule Patient Visit
+          {t('calendar.bookAppointment')}
         </button>
       </div>
 
       {/* Filter and stats row */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-left rtl:text-right">
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <div className="text-xs text-slate-500">Today's Visits</div>
+            <div className="text-xs text-slate-500">{t('calendar.todayAppointments')}</div>
             <div className="text-2xl font-black text-slate-900 mt-0.5">
               {appointments.filter(a => a.date === '2026-10-22').length}
             </div>
@@ -116,7 +119,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <div className="text-xs text-slate-500">RPM Telemetry Reviews</div>
+            <div className="text-xs text-slate-500">{t('dashboard.statActiveAlerts')}</div>
             <div className="text-2xl font-black text-cyan-600 mt-0.5">
               {appointments.filter(a => a.type === 'RPM Review').length}
             </div>
@@ -128,7 +131,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <div className="text-xs text-slate-500">Post-PCI Follow-ups</div>
+            <div className="text-xs text-slate-500">{t('dashboard.postPci')}</div>
             <div className="text-2xl font-black text-indigo-600 mt-0.5">
               {appointments.filter(a => a.type === 'Post-PCI Check').length}
             </div>
@@ -140,7 +143,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
         <div className="p-4 rounded-xl bg-white border border-slate-200 shadow-sm flex items-center justify-between">
           <div>
-            <div className="text-xs text-slate-500">Echo Diagnostic Slots</div>
+            <div className="text-xs text-slate-500">{t('calendar.echoSlot')}</div>
             <div className="text-2xl font-black text-amber-600 mt-0.5">
               {appointments.filter(a => a.type === 'Echo Follow-up').length}
             </div>
@@ -156,22 +159,22 @@ export const Calendar: React.FC<CalendarProps> = ({
         {/* Controls Bar */}
         <div className="p-4 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-700">Filter Modality:</span>
+            <span className="font-bold text-slate-700">{t('common.filter')}:</span>
             <select
               value={filterType}
               onChange={e => setFilterType(e.target.value)}
               className="px-3 py-1.5 rounded-lg border border-slate-300 bg-white font-medium focus:outline-none"
             >
-              <option value="all">All Cardiology Appointments</option>
-              <option value="Initial Consultation">Initial Consultation</option>
-              <option value="Echo Follow-up">Echo Follow-up</option>
-              <option value="RPM Review">RPM Review</option>
-              <option value="Post-PCI Check">Post-PCI Check</option>
+              <option value="all">{t('common.all')}</option>
+              <option value="Initial Consultation">{isRtl ? 'كشف أول مرة' : 'Initial Consultation'}</option>
+              <option value="Echo Follow-up">{isRtl ? 'متابعة إيكو' : 'Echo Follow-up'}</option>
+              <option value="RPM Review">{isRtl ? 'مراجعة قياسات RPM' : 'RPM Review'}</option>
+              <option value="Post-PCI Check">{isRtl ? 'متابعة بعد القسطرة' : 'Post-PCI Check'}</option>
             </select>
           </div>
 
           <div className="text-slate-500 font-medium">
-            Showing {filteredAppointments.length} scheduled sessions
+            {filteredAppointments.length} {t('calendar.todayAppointments')}
           </div>
         </div>
 
@@ -269,16 +272,16 @@ export const Calendar: React.FC<CalendarProps> = ({
             <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
               <h2 className="text-sm font-bold flex items-center gap-2">
                 <CalendarIcon className="w-4 h-4 text-rose-500" />
-                Schedule Cardiology Visit
+                {t('calendar.bookAppointment')}
               </h2>
               <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateAppointment} className="p-6 space-y-4 text-xs">
+            <form onSubmit={handleCreateAppointment} className="p-6 space-y-4 text-xs text-left rtl:text-right">
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Select Patient:</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('calendar.selectPatient')}:</label>
                 <select
                   value={patientId}
                   onChange={e => setPatientId(e.target.value)}
@@ -294,7 +297,7 @@ export const Calendar: React.FC<CalendarProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Appointment Date:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('calendar.date')}:</label>
                   <input
                     type="date"
                     value={date}
@@ -304,7 +307,7 @@ export const Calendar: React.FC<CalendarProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Time Slot:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('calendar.time')}:</label>
                   <input
                     type="time"
                     value={time}
@@ -316,22 +319,22 @@ export const Calendar: React.FC<CalendarProps> = ({
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Visit Modality:</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('calendar.type')}:</label>
                 <select
                   value={type}
                   onChange={e => setType(e.target.value as Appointment['type'])}
                   className="w-full px-3 py-2 rounded-lg border border-slate-300 font-medium"
                 >
-                  <option value="Initial Consultation">Initial Consultation</option>
-                  <option value="Echo Follow-up">Echo Diagnostic Follow-up</option>
-                  <option value="RPM Review">RPM Telemetry Review</option>
-                  <option value="Post-PCI Check">Post-PCI Coronary Check</option>
-                  <option value="Routine Checkup">Routine Cardiovascular Checkup</option>
+                  <option value="Initial Consultation">{isRtl ? 'كشف أولي' : 'Initial Consultation'}</option>
+                  <option value="Echo Follow-up">{isRtl ? 'فحص صدى القلب (إيكو)' : 'Echo Diagnostic Follow-up'}</option>
+                  <option value="RPM Review">{isRtl ? 'مراجعة المراقبة عن بُعد (RPM)' : 'RPM Telemetry Review'}</option>
+                  <option value="Post-PCI Check">{isRtl ? 'متابعة بعد دعامة/قسطرة' : 'Post-PCI Coronary Check'}</option>
+                  <option value="Routine Checkup">{isRtl ? 'فحص دوري روتيني' : 'Routine Cardiovascular Checkup'}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Clinical Indication / Reason:</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('calendar.notes')}:</label>
                 <input
                   type="text"
                   value={reason}
@@ -342,7 +345,7 @@ export const Calendar: React.FC<CalendarProps> = ({
               </div>
 
               <div>
-                <label className="block font-bold text-slate-700 mb-1">Notes / Instructions:</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('common.notes')}:</label>
                 <textarea
                   rows={2}
                   value={notes}
@@ -357,13 +360,13 @@ export const Calendar: React.FC<CalendarProps> = ({
                   onClick={() => setIsModalOpen(false)}
                   className="px-4 py-2 rounded-lg border border-slate-300 text-slate-600 font-bold"
                 >
-                  Cancel
+                  {t('calendar.cancel')}
                 </button>
                 <button
                   type="submit"
                   className="px-5 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold shadow-md"
                 >
-                  Confirm & Schedule
+                  {t('calendar.save')}
                 </button>
               </div>
             </form>

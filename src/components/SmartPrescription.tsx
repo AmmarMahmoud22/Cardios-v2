@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Patient, Prescription, Medication } from '../types';
 import { CARDIOLOGY_DRUGS, PRESCRIPTION_TEMPLATES } from '../data/mockData';
 import { savePrescription } from '../firebase/firestoreService';
@@ -25,6 +26,8 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
   onPrescriptionSaved,
   onOpenPrintPreview
 }) => {
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith('ar');
   const [medications, setMedications] = useState<Medication[]>([
     {
       id: `med-${Date.now()}-1`,
@@ -138,18 +141,18 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
   );
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 text-left rtl:text-right">
       {/* Header */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-5 border-b border-slate-200">
         <div>
           <h2 className="text-xl font-extrabold text-slate-900 flex items-center gap-2.5 font-heading">
-            <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600">
+            <div className="w-9 h-9 rounded-xl bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
               <Pill className="w-5 h-5" />
             </div>
-            Smart Cardiology Prescription Engine
+            {t('smartRx.title')}
           </h2>
           <p className="text-xs text-slate-500 mt-1">
-            Intelligent dosage auto-complete, guideline-directed templates & professional PDF printing
+            {t('smartRx.subtitle')}
           </p>
         </div>
 
@@ -160,7 +163,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-500 shadow-md shadow-rose-600/30 transition disabled:opacity-50"
           >
             <Printer className="w-4 h-4" />
-            Print / Export PDF
+            {t('smartRx.printPrescription')}
           </button>
         </div>
       </div>
@@ -169,14 +172,14 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
       <div className="my-5 p-4 rounded-xl bg-slate-50 border border-slate-200">
         <div className="flex items-center gap-2 text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
           <Sparkles className="w-4 h-4 text-amber-500" />
-          <span>Guideline-Directed Medical Therapy (GDMT) Quick Templates:</span>
+          <span>{isRtl ? 'نماذج العلاج الدوائي الموجه بالأدلة (GDMT):' : 'Guideline-Directed Medical Therapy (GDMT) Quick Templates:'}</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {PRESCRIPTION_TEMPLATES.map((tmpl, idx) => (
             <button
               key={idx}
               onClick={() => applyTemplate(idx)}
-              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-300 transition shadow-sm text-left flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-lg text-xs font-medium bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-700 border border-slate-200 hover:border-rose-300 transition shadow-sm text-left rtl:text-right flex items-center gap-1.5"
             >
               <Check className="w-3.5 h-3.5 text-rose-600" />
               <span>{tmpl.name}</span>
@@ -189,7 +192,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
       <div className="p-4 rounded-xl border border-rose-100 bg-rose-50/30 mb-6">
         <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3 flex items-center gap-1.5">
           <Search className="w-3.5 h-3.5 text-rose-600" />
-          <span>Add Medication (Cardiology Auto-Complete)</span>
+          <span>{t('smartRx.newPrescription')}</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-3">
@@ -204,7 +207,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
                   setSelectedDrug(null);
                 }
               }}
-              placeholder="Search drug (e.g. Atorvastatin, Bisoprolol, Ramipril...)"
+              placeholder={isRtl ? 'ابحث عن الدواء (مثال: Atorvastatin, Bisoprolol, Ramipril...)' : 'Search drug (e.g. Atorvastatin, Bisoprolol, Ramipril...)'}
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             />
 
@@ -261,7 +264,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
                 type="text"
                 value={customDosage}
                 onChange={e => setCustomDosage(e.target.value)}
-                placeholder="Dosage (e.g. 5 mg)"
+                placeholder={t('smartRx.dosage')}
                 className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
               />
             )}
@@ -273,7 +276,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
               type="text"
               value={customFreq}
               onChange={e => setCustomFreq(e.target.value)}
-              placeholder="Frequency"
+              placeholder={t('smartRx.frequency')}
               className="w-full px-3 py-2 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             />
           </div>
@@ -286,7 +289,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
               className="w-full h-full min-h-[36px] px-3 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs flex items-center justify-center gap-1.5 shadow-sm transition"
             >
               <Plus className="w-4 h-4" />
-              Add
+              {t('smartRx.addDrug')}
             </button>
           </div>
 
@@ -296,7 +299,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
               type="text"
               value={customInstructions}
               onChange={e => setCustomInstructions(e.target.value)}
-              placeholder="Special instructions (e.g. Take with dinner, monitor resting HR...)"
+              placeholder={t('smartRx.instructions')}
               className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             />
           </div>
@@ -306,7 +309,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
               type="text"
               value={customDuration}
               onChange={e => setCustomDuration(e.target.value)}
-              placeholder="Duration (e.g. 90 days)"
+              placeholder={t('smartRx.duration')}
               className="w-full px-3 py-1.5 text-xs rounded-lg border border-slate-300 focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white"
             />
           </div>
@@ -317,14 +320,14 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
       <div className="mb-6">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">
-            Current Prescribed Medications ({medications.length})
+            {t('smartRx.activePrescriptionsTitle')} ({medications.length})
           </h3>
-          <span className="text-xs text-slate-400">Drag or click delete to modify</span>
+          <span className="text-xs text-slate-400">{t('common.edit')}</span>
         </div>
 
         {medications.length === 0 ? (
           <div className="p-8 text-center text-slate-400 border-2 border-dashed border-slate-200 rounded-xl text-xs">
-            No medications added yet. Use auto-complete or select a GDMT template above.
+            {t('smartRx.rxNoItems')}
           </div>
         ) : (
           <div className="divide-y divide-slate-100 border border-slate-200 rounded-xl overflow-hidden">
@@ -345,7 +348,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
                     </div>
                     {med.instructions && (
                       <div className="text-slate-500 italic text-[11px] mt-0.5">
-                        Note: {med.instructions}
+                        {t('common.notes')}: {med.instructions}
                       </div>
                     )}
                   </div>
@@ -355,7 +358,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
                   <button
                     onClick={() => removeMedication(med.id)}
                     className="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition"
-                    title="Remove item"
+                    title={t('common.delete')}
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -369,7 +372,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
       {/* Clinical Diagnosis & Notes */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-slate-200 text-xs">
         <div>
-          <label className="block font-bold text-slate-700 mb-1">Diagnosis Specification:</label>
+          <label className="block font-bold text-slate-700 mb-1">{t('patientProfile.primaryDiagnosis')}:</label>
           <input
             type="text"
             value={diagnosis}
@@ -379,7 +382,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
         </div>
 
         <div>
-          <label className="block font-bold text-slate-700 mb-1">Scheduled Next Follow-Up:</label>
+          <label className="block font-bold text-slate-700 mb-1">{t('patientProfile.nextAppointment')}:</label>
           <input
             type="date"
             value={nextFollowUp}
@@ -389,7 +392,7 @@ export const SmartPrescription: React.FC<SmartPrescriptionProps> = ({
         </div>
 
         <div className="md:col-span-2">
-          <label className="block font-bold text-slate-700 mb-1">Directives for RPM & Home Monitoring:</label>
+          <label className="block font-bold text-slate-700 mb-1">{t('common.notes')}:</label>
           <textarea
             rows={2}
             value={clinicalNotes}

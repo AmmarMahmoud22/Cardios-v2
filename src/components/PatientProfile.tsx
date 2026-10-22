@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   Patient, 
   VitalSign, 
@@ -149,6 +150,8 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
     }
   };
 
+  const { t, i18n } = useTranslation();
+  const isRtl = i18n.language?.startsWith('ar');
   const latestVital = vitals[0];
   const pendingLabsCount = labs.filter(l => l.status === 'Pending Review').length;
 
@@ -160,8 +163,8 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           onClick={onBackToDashboard}
           className="inline-flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition"
         >
-          <ArrowLeft className="w-4 h-4 text-rose-600" />
-          <span>Back to All Patients</span>
+          <ArrowLeft className="w-4 h-4 text-rose-600 rtl:rotate-180" />
+          <span>{t('patientProfile.backToDashboard')}</span>
         </button>
 
         {/* Action Toolbar */}
@@ -172,7 +175,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cardio-600 to-orange-500 hover:from-cardio-500 hover:to-orange-400 shadow-md shadow-rose-900/20 transition transform hover:-translate-y-0.5"
           >
             <Sparkles className="w-4 h-4" />
-            Consult AI Assistant
+            {t('patientProfile.askCopilot')}
           </button>
 
           {/* Billing */}
@@ -181,7 +184,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 transition"
           >
             <CreditCard className="w-4 h-4 text-emerald-600" />
-            Billing & Invoices
+            {t('patientProfile.newInvoice')}
           </button>
 
           {/* Referral */}
@@ -190,7 +193,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-indigo-800 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition"
           >
             <Share2 className="w-4 h-4 text-indigo-600" />
-            Refer Specialist
+            {t('patientProfile.newReferral')}
           </button>
 
           {/* Review Labs */}
@@ -199,16 +202,16 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
             className="relative inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 transition"
           >
             <Clock className="w-4 h-4 text-amber-500" />
-            Review Labs
+            {t('patientProfile.reviewLabs')}
             {pendingLabsCount > 0 && (
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping ml-1" />
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping ltr:ml-1 rtl:mr-1" />
             )}
           </button>
         </div>
       </div>
 
       {/* Patient Header Demographics Card */}
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 relative overflow-hidden">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 relative overflow-hidden text-left rtl:text-right">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-6">
           <div className="flex items-start gap-4">
             <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-cardio-600 to-rose-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-rose-900/30 shrink-0">
@@ -237,22 +240,22 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                   ) : (
                     <ShieldCheck className="w-3.5 h-3.5" />
                   )}
-                  {patient.status}
+                  {patient.status === 'Alert: High BP' ? t('dashboard.alert') : patient.status === 'Pending Lab' ? t('dashboard.needsLab') : t('dashboard.stable')}
                 </span>
               </div>
 
               <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500">
-                <span><strong>DOB:</strong> {patient.dob} ({patient.age}y / {patient.gender})</span>
+                <span><strong>{t('registerModal.dob')}:</strong> {patient.dob} ({patient.age} {t('patientProfile.yearsOld')} / {patient.gender === 'Male' ? t('registerModal.male') : t('registerModal.female')})</span>
                 <span>•</span>
-                <span><strong>Blood:</strong> <span className="font-bold text-rose-600">{patient.bloodType}</span></span>
+                <span><strong>{t('patientProfile.bloodType')}:</strong> <span className="font-bold text-rose-600">{patient.bloodType}</span></span>
                 <span>•</span>
-                <span><strong>Phone:</strong> {patient.phone}</span>
+                <span><strong>{t('patientProfile.phone')}:</strong> {patient.phone}</span>
                 <span>•</span>
-                <span><strong>City:</strong> {patient.address}</span>
+                <span><strong>{t('registerModal.address')}:</strong> {patient.address}</span>
               </div>
 
               <div className="pt-2 text-xs text-slate-800">
-                <span className="text-slate-500 font-medium">Primary Diagnosis: </span>
+                <span className="text-slate-500 font-medium">{t('patientProfile.primaryDiagnosis')}: </span>
                 <strong className="text-slate-900 bg-rose-50 px-2 py-0.5 rounded border border-rose-100">
                   {patient.primaryDiagnosis}
                 </strong>
@@ -263,7 +266,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           {/* Quick Metrics / Key Telemetry readout */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-slate-50 p-3.5 rounded-xl border border-slate-200 shrink-0 text-xs">
             <div className="text-center p-2 rounded-lg bg-white border border-slate-200">
-              <span className="text-[10px] text-slate-500 block uppercase">Latest BP</span>
+              <span className="text-[10px] text-slate-500 block uppercase">{t('vitals.lastReading')}</span>
               <strong className={`text-base font-black ${
                 latestVital && latestVital.systolic >= 160 ? 'text-rose-600' : 'text-slate-900'
               }`}>
@@ -273,7 +276,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
             </div>
 
             <div className="text-center p-2 rounded-lg bg-white border border-slate-200">
-              <span className="text-[10px] text-slate-500 block uppercase">Heart Rate</span>
+              <span className="text-[10px] text-slate-500 block uppercase">{t('vitals.pulseTrend')}</span>
               <strong className="text-base font-black text-cyan-600">
                 {latestVital ? `${latestVital.heartRate}` : '—'}
               </strong>
@@ -281,7 +284,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
             </div>
 
             <div className="text-center p-2 rounded-lg bg-white border border-slate-200 col-span-2 sm:col-span-1">
-              <span className="text-[10px] text-slate-500 block uppercase">Next Visit</span>
+              <span className="text-[10px] text-slate-500 block uppercase">{t('patientProfile.nextAppointment')}</span>
               <strong className="text-xs font-bold text-indigo-700 block mt-1">
                 {patient.nextAppointment || 'Nov 12, 2026'}
               </strong>
@@ -291,7 +294,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
 
         {/* Clinical Tags & Risk Factors */}
         <div className="mt-4 pt-4 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
-          <span className="text-slate-500 font-semibold text-[11px]">Risk Profile:</span>
+          <span className="text-slate-500 font-semibold text-[11px]">{t('patientProfile.riskFactors')}:</span>
           {patient.riskFactors.map((rf, idx) => (
             <span key={idx} className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[11px] font-medium">
               {rf}
@@ -299,12 +302,12 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           ))}
           {patient.allergies.length > 0 && (
             <span className="px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-700 text-[11px] font-bold border border-rose-200">
-              Allergies: {patient.allergies.join(', ')}
+              {t('patientProfile.allergies')}: {patient.allergies.join(', ')}
             </span>
           )}
           {patient.implantedDevices && patient.implantedDevices.length > 0 && (
             <span className="px-2.5 py-0.5 rounded-full bg-cyan-50 text-cyan-800 text-[11px] font-bold border border-cyan-200">
-              Device: {patient.implantedDevices.join(', ')}
+              {t('patientProfile.devices')}: {patient.implantedDevices.join(', ')}
             </span>
           )}
         </div>
@@ -321,7 +324,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           }`}
         >
           <Activity className="w-4 h-4" />
-          <span>Vitals Trends & RPM Telemetry</span>
+          <span>{t('patientProfile.tabOverview')}</span>
         </button>
 
         <button
@@ -333,7 +336,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           }`}
         >
           <Pill className="w-4 h-4" />
-          <span>Smart Prescription Engine</span>
+          <span>{t('patientProfile.tabPrescription')}</span>
           {prescriptions.length > 0 && (
             <span className="px-1.5 py-0.2 rounded-full bg-slate-100 text-slate-600 text-[10px]">
               {prescriptions.length}
@@ -350,7 +353,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           }`}
         >
           <FileText className="w-4 h-4" />
-          <span>Echo & ECG Diagnostic Reports</span>
+          <span>{t('patientProfile.tabReports')}</span>
           {reports.length > 0 && (
             <span className="px-1.5 py-0.2 rounded-full bg-cyan-100 text-cyan-700 text-[10px]">
               {reports.length}
@@ -367,7 +370,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           }`}
         >
           <CreditCard className="w-4 h-4" />
-          <span>Practice Invoices ({invoices.length})</span>
+          <span>{t('patientProfile.tabBilling')} ({invoices.length})</span>
         </button>
 
         <button
@@ -379,7 +382,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           }`}
         >
           <Share2 className="w-4 h-4" />
-          <span>Cath Lab & Referrals ({referrals.length})</span>
+          <span>{t('patientProfile.tabReferrals')} ({referrals.length})</span>
         </button>
       </div>
 
@@ -426,21 +429,21 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
           <VitalsChart vitals={vitals} />
 
           {/* Quick Entry Form & Pending Labs Overview Grid */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left rtl:text-right">
             {/* Quick Log Vitals Card */}
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm font-heading">
                   <Activity className="w-4 h-4 text-rose-600" />
-                  Log Vitals Quick Entry
+                  {t('patientProfile.quickVitalsTitle', 'Log Vitals Quick Entry')}
                 </h3>
-                <span className="text-[10px] text-slate-400">Clinic / In-Person</span>
+                <span className="text-[10px] text-slate-400">{t('common.live', 'Clinic / In-Person')}</span>
               </div>
 
               <form onSubmit={handleQuickLogVitals} className="space-y-3 text-xs">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Systolic (mmHg):</label>
+                    <label className="block font-bold text-slate-700 mb-1">{t('patientProfile.systolic')} (mmHg):</label>
                     <input
                       type="number"
                       value={quickSystolic}
@@ -449,7 +452,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="block font-bold text-slate-700 mb-1">Diastolic (mmHg):</label>
+                    <label className="block font-bold text-slate-700 mb-1">{t('patientProfile.diastolic')} (mmHg):</label>
                     <input
                       type="number"
                       value={quickDiastolic}
@@ -460,7 +463,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Heart Rate (bpm):</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('patientProfile.heartRate')}:</label>
                   <input
                     type="number"
                     value={quickHR}
@@ -470,7 +473,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                 </div>
 
                 <div>
-                  <label className="block font-bold text-slate-700 mb-1">Encounter Notes:</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('common.notes')}:</label>
                   <input
                     type="text"
                     value={quickNotes}
@@ -485,7 +488,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                   className="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-md shadow-rose-600/20 transition flex items-center justify-center gap-1.5"
                 >
                   <Plus className="w-4 h-4" />
-                  Save Reading to Patient Chart
+                  {t('patientProfile.logVitalsButton')}
                 </button>
               </form>
             </div>
@@ -495,13 +498,13 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm font-heading">
                   <Clock className="w-4 h-4 text-amber-500" />
-                  Cardiac Laboratory Results ({labs.length})
+                  {t('patientProfile.diagnosticLabs')} ({labs.length})
                 </h3>
                 <button
                   onClick={() => setIsLabReviewOpen(true)}
                   className="text-xs text-rose-600 hover:underline font-bold"
                 >
-                  Review All
+                  {t('patientProfile.reviewLabs')}
                 </button>
               </div>
 
@@ -514,10 +517,10 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                     <div>
                       <div className="font-bold text-slate-900">{lab.testName}</div>
                       <div className="text-[11px] text-slate-500">
-                        {lab.date} • Ref: {lab.referenceRange}
+                        {lab.date} • {t('labReview.referenceRange')}: {lab.referenceRange}
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="ltr:text-right rtl:text-left">
                       <div className="font-black text-slate-900">{lab.result} {lab.unit}</div>
                       <span className={`text-[10px] font-bold ${
                         lab.status === 'Pending Review'
@@ -526,7 +529,7 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                           ? 'text-rose-600'
                           : 'text-emerald-600'
                       }`}>
-                        {lab.status}
+                        {lab.status === 'Pending Review' ? t('billing.pending') : lab.status === 'Abnormal' ? t('labReview.statusElevated') : t('labReview.statusNormal')}
                       </span>
                     </div>
                   </div>
@@ -539,13 +542,13 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-slate-900 flex items-center gap-2 text-sm font-heading">
                   <Pill className="w-4 h-4 text-rose-600" />
-                  Active Medications
+                  {t('patientProfile.activePrescriptions')}
                 </h3>
                 <button
                   onClick={() => setActiveTab('prescription')}
                   className="text-xs text-rose-600 hover:underline font-bold"
                 >
-                  Modify Rx
+                  {t('common.edit')}
                 </button>
               </div>
 
@@ -562,12 +565,12 @@ export const PatientProfile: React.FC<PatientProfileProps> = ({
                     className="w-full mt-2 py-2 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition flex items-center justify-center gap-1.5"
                   >
                     <Printer className="w-3.5 h-3.5 text-rose-600" />
-                    Print Current Prescription PDF
+                    {t('smartRx.printPrescription')}
                   </button>
                 </div>
               ) : (
                 <div className="p-6 text-center text-slate-400 text-xs">
-                  No active prescription found. Switch to Smart Prescription tab to generate one.
+                  {t('patientProfile.noMeds')}
                 </div>
               )}
             </div>

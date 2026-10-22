@@ -1,5 +1,6 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { getFirestore, Firestore } from 'firebase/firestore';
+import { getAuth, Auth } from 'firebase/auth';
 
 // Environment variables configuration with safe fallbacks
 const firebaseConfig = {
@@ -13,6 +14,7 @@ const firebaseConfig = {
 
 let app: FirebaseApp | null = null;
 let db: Firestore | null = null;
+let firebaseAuth: Auth | null = null;
 let isFirestoreAvailable = false;
 
 try {
@@ -25,6 +27,7 @@ try {
   
   if (app) {
     db = getFirestore(app);
+    firebaseAuth = getAuth(app);
     // If real keys are provided and not default placeholder, mark active
     if (import.meta.env.VITE_FIREBASE_API_KEY && import.meta.env.VITE_FIREBASE_PROJECT_ID) {
       isFirestoreAvailable = true;
@@ -35,4 +38,4 @@ try {
   isFirestoreAvailable = false;
 }
 
-export { app, db, isFirestoreAvailable, firebaseConfig };
+export { app, db, firebaseAuth, isFirestoreAvailable, firebaseConfig };
