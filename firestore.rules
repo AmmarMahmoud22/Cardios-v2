@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Cardios Cardiology EHR & RPM Platform Rules
+    // Allow read and write across all collections and nested sub-collections
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}
